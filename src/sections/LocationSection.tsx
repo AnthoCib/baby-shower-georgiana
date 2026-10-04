@@ -2,6 +2,7 @@ import { ArrowUpRight, MapPin } from 'lucide-react'
 import { Reveal } from '../components/Reveal'
 import { SectionLabel } from '../components/SectionLabel'
 import { event } from '../data/event'
+import bunnyAccent from '../assets/bunnies/bunny-accent.png'
 
 const addressQuery = encodeURIComponent(event.address.join(', '))
 const mapsHref = event.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${addressQuery}` 
@@ -14,5 +15,8 @@ export function LocationSection() {
       <a className="outline-button" href={mapsHref} target="_blank" rel="noreferrer">Ver ubicación en Google Maps <ArrowUpRight size={15} /></a>
     </Reveal>
     <div className="location-ornament" aria-hidden="true">✿</div>
+    <div className="location-illustration" aria-hidden="true">
+      <img src={bunnyAccent} alt="" />
+    </div>
   </section>
 }

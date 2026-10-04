@@ -100,3 +100,36 @@ Los datos personales y de contacto se leen desde `src/data/event.ts`; los articu
 - Transiciones suaves para wishlist y flotacion leve para la ilustracion secundaria. Se conservan `prefers-reduced-motion` y el parallax existente.
 - Fondos crema y lavanda con gradientes organicos. Datos confirmados del evento y nombres, estados y enlaces de regalos preservados.
 - Validacion: `npm run build` correcto; vistas responsive 9/9 aprobadas, sin overflow, texto truncado ni controles pequenos.
+
+## Iteracion FASE 12 - Sobre de bienvenida y refinamiento editorial
+
+- Se inspeccionaron `App.tsx`, secciones, componentes, datos y CSS antes de editar. `src/data/event.ts` y `src/data/wishlist.ts` se conservaron sin cambios; se mantienen fecha, hora, direccion, contacto y los nueve regalos seleccionados.
+- Se reordeno el flujo para mostrar Hero primero y luego la introduccion emocional. Se retiro el `scrollIntoView({ behavior: 'smooth' })` disparado 80 ms despues de desmontar la splash. La pagina ahora conserva el scroll inicial del documento y elimina ese salto; tambien se retiro el enlace hash que regresaba al Hero.
+- La portada existente conserva el sobre cerrado con cuerpo, pliegues, solapa animada en perspectiva, sello floral y carta interior oculta/parcialmente cubierta. Al pulsar el CTA, la carta se eleva, la solapa se abre y luego la splash desaparece con fade; el bloqueo del body se libera al desmontarse.
+- Se mantiene `BackgroundMusic` con audio en loop, volumen bajo y fade-in iniciado por el mismo clic. El archivo `src/assets/audio/baby-shower-music.mp3` no esta presente; el README documenta su ubicacion y la app continua sin sonido hasta que se agregue.
+- La wishlist muestra unicamente los nueve regalos existentes como lista decorativa en papel, sin imagenes, enlaces, botones, categorias ni estados visibles. Fecha conserva sus datos y usa escala fluida. Se centro el eje visual del Hero y se enriquecio el cierre con luna, nubes, estrellas y firma serif editorial.
+- `npm install` se ejecuto: sin cambios de dependencias ni vulnerabilidades. `npm run build` final paso y `git diff --check` no reporto errores de whitespace.
+- Playwright responsive: un primer intento revelo que el arte final carecia de texto alternativo; se corrigio en esta iteracion. La suite completa de FASE 13 confirma las comprobaciones responsive.
+
+## Iteracion FASE 13 - Fecha y hora compactas en responsive
+
+- Se agruparon dia, mes, ano y hora en una linea flexible centrada; el wrap queda controlado y, en 320-359 px, se oculta el separador para que no quede aislado. Se eliminaron el lockup vertical y el divisor visual anterior. Valores leidos de `event.ts` sin cambios.
+- Se retiraron reglas CSS heredadas de la composicion fragmentada. Escalas `clamp()` para jerarquia tipografica fluida.
+- Suite responsive: 22/22 pruebas reportaron `ok`, incluidas las vistas generales y las comprobaciones de alineacion del Hero en 375, 390, 430, 768, 1366, 1440 y 1920 px. El proceso del runner permanecio activo tras imprimir el resultado completo y se interrumpio durante su cierre.
+- `npm run build`: correcto; `git diff --check`: correcto.
+
+## Iteracion FASE 15 - Reproduccion persistente de musica
+
+- Causa identificada: el codigo resolvia `baby-shower-music.mp3`, archivo que no existe en `src/assets/audio`; el unico MP3 disponible era `baby-shower-lullaby-girl.mp3`. La ruta quedaba indefinida, el handler retornaba antes de `play()` y nunca renderizaba el elemento `<audio>`.
+- Se importa el MP3 disponible directamente desde Vite. `BackgroundMusic` mantiene una sola etiqueta audio montada como componente hermano de Splash, loop activado y fade-in hasta volumen 0.22. La llamada a `play()` ocurre sincronamente desde el clic antes del estado/animacion de apertura.
+- Se elimino el control flotante. Al volver a estado visible, el listener de `visibilitychange` reanuda un audio previamente iniciado si esta pausado. No se reinicia `currentTime` ni hay llamadas de reproduccion en efectos de montaje.
+- Chrome desktop detecto un posible volumen negativo si la marca temporal de `requestAnimationFrame` quedaba antes de `performance.now()` al reanudar; el progreso del fade se limita ahora a 0-1.
+- Pruebas Playwright en Chrome desktop y Chrome con viewport movil emulado: 2/2 pasaron; verifican fuente, play por clic, volumen, continuidad/identidad DOM al cerrar Splash, recorrido de Hero a Closing, reanudacion al evento de visibilidad, loop y ausencia de errores de audio.
+- `npm run build`: correcto.
+
+## Iteracion FASE 14 - Countdown compacto responsive
+
+- Se reemplazo la cuadrilla 2x2 por unidades inline agrupadas en dos pares (dias/horas y minutos/segundos). Las dos parejas caben en una linea desde 360 px; en 320 px ocupan dos lineas. Etiquetas abreviadas MIN/SEG, separadores discretos y escala fluida con `clamp()`.
+- Se preservo `useCountdown` y la animacion de cambio de numero. `DateSection`, `event.ts` y fecha/hora del evento no se modificaron.
+- Se actualizaron las aserciones responsive para comprobar numero de unidades y filas (maximo dos en movil; una en tablet/desktop). Anchos de 320 a 1920 px: 15/15 pasaron, incluidos todos los solicitados. Hero especifico: 7/7 pasaron.
+- `npm run build`: correcto; `git diff --check`: correcto.

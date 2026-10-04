@@ -43,16 +43,11 @@ export default function App() {
     return () => { document.body.style.overflow = previousOverflow }
   }, [showSplash])
 
-  const handleEnter = () => {
-    musicRef.current?.start()
-  }
+  const handleEnter = () => musicRef.current?.play() ?? Promise.resolve()
 
   return <>
-    <main className="min-h-screen w-full"><IntroSection /><HeroSection /><MessageSection /><DateSection /><CountdownSection /><WishlistSection /><LocationSection /><RsvpSection /><ClosingSection /></main>
+    <main className="min-h-screen w-full"><HeroSection /><IntroSection /><MessageSection /><DateSection /><CountdownSection /><WishlistSection /><LocationSection /><RsvpSection /><ClosingSection /></main>
     <BackgroundMusic ref={musicRef} />
-    {showSplash && <WelcomeSplash onEnter={handleEnter} onDismiss={() => {
-      setShowSplash(false)
-      window.setTimeout(() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
-    }} />}
+    {showSplash && <WelcomeSplash onEnter={handleEnter} onDismiss={() => setShowSplash(false)} />}
   </>
 }

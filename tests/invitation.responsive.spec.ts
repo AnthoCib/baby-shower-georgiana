@@ -29,8 +29,24 @@ for (const width of widths) {
       const clippedText = Array.from(document.querySelectorAll<HTMLElement>('h1, h2, h3, .wishlist-name, .wishlist-action, .section-label, .outline-button, .solid-button'))
         .filter(element => element.clientWidth > 0 && element.scrollWidth > element.clientWidth + 2)
         .map(element => ({ tag: element.tagName, className: element.className.toString(), text: element.textContent?.trim().slice(0, 40) }))
-      const imageState = Array.from(document.images).map(image => ({ alt: image.alt, loaded: image.complete && image.naturalWidth > 0 }))
-      const countColumns = getComputedStyle(document.querySelector('.countdown-grid')!).gridTemplateColumns.split(' ').length
+      const imageState = Array.from(document.images).map(image => ({ hasAlt: image.closest('[aria-hidden="true"]') !== null || image.alt.length > 0, loaded: image.complete && image.naturalWidth > 0 }))
+      const countdownUnits = Array.from(document.querySelectorAll<HTMLElement>('.countdown-unit'))
+      const countdownRows = new Set(countdownUnits.map(unit => Math.round(unit.getBoundingClientRect().top)))
+      const dateMeta = document.querySelector<HTMLElement>('.date-meta')!
+      const dateLineItems = Array.from(dateMeta.children) as HTMLElement[]
+      const rowCount = (items: HTMLElement[]) => {
+        const sorted = items.filter(item => getComputedStyle(item).display !== 'none').map(item => item.getBoundingClientRect()).sort((a, b) => a.top - b.top)
+        let rows = 0
+        let rowBottom = -Infinity
+        for (const rect of sorted) {
+          if (rect.top >= rowBottom - 1) rows += 1
+          rowBottom = Math.max(rowBottom, rect.bottom)
+        }
+        return rows
+      }
+      const dateRows = rowCount(dateLineItems)
+      const dateParts = Array.from(document.querySelectorAll<HTMLElement>('.date-day, .date-month-name, .date-year'))
+      const datePartsRows = rowCount(dateParts)
       const wishColumns = getComputedStyle(document.querySelector('.wishlist-list')!).gridTemplateColumns.split(' ').length
       const giftCount = document.querySelectorAll('.wishlist-item').length
       const wishlistImages = document.querySelectorAll('.wishlist-list img').length
@@ -40,15 +56,21 @@ for (const width of widths) {
       const heroCenterDelta = Math.abs((heroCopy.left + heroCopy.width / 2) - (heroIllustration.left + heroIllustration.width / 2))
       const linksUnder44 = Array.from(document.querySelectorAll<HTMLElement>('.outline-button, .solid-button, .wishlist-action[href]'))
         .filter(link => link.getBoundingClientRect().height < 44).map(link => link.textContent?.trim())
-      return { width, scrollWidth: document.documentElement.scrollWidth, outOfBounds, clippedText, imageState, countColumns, wishColumns, giftCount, wishlistImages, visibleCategories, heroCenterDelta, linksUnder44 }
+      return { width, scrollWidth: document.documentElement.scrollWidth, outOfBounds, clippedText, imageState, countdownRows: countdownRows.size, countdownUnits: countdownUnits.length, dateRows, datePartsRows, wishColumns, giftCount, wishlistImages, visibleCategories, heroCenterDelta, linksUnder44 }
     })
 
     expect(layout.scrollWidth, `overflow horizontal en ${width}px`).toBeLessThanOrEqual(width)
     expect(layout.outOfBounds, `elementos fuera del viewport en ${width}px`).toEqual([])
     expect(layout.clippedText, `texto cortado en ${width}px`).toEqual([])
-    expect(layout.imageState.every(image => image.loaded && image.alt.length > 0), `imagenes ausentes o sin alt en ${width}px`).toBe(true)
+    expect(layout.imageState.every(image => image.loaded && image.hasAlt), `imagenes ausentes o sin alt en ${width}px`).toBe(true)
     expect(layout.linksUnder44, `botones/links pequenos en ${width}px`).toEqual([])
-    expect(layout.countColumns).toBe(width < 600 ? 2 : 4)
+    expect(layout.countdownUnits).toBe(4)
+    expect(layout.countdownRows, `filas del countdown en ${width}px`).toBeLessThanOrEqual(2)
+    expect(layout.dateRows, `filas de fecha/hora en ${width}px`).toBeLessThanOrEqual(2)
+    expect(layout.datePartsRows, `fragmentacion del dia/mes/ano en ${width}px`).toBe(1)
+    if (width >= 768) expect(layout.dateRows, `fecha/hora en una linea en ${width}px`).toBe(1)
+    if (width <= 320) expect(layout.countdownRows).toBe(2)
+    if (width >= 768) expect(layout.countdownRows).toBe(1)
     expect(layout.wishColumns).toBe(1)
     expect(layout.giftCount).toBe(9)
     expect(layout.wishlistImages).toBe(0)

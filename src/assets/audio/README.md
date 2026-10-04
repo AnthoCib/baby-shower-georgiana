@@ -1,7 +1,5 @@
 # Música de fondo
 
-Coloca en esta carpeta un archivo MP3 con licencia adecuada y nómbralo `baby-shower-music.mp3`:
+La invitación importa el audio local `baby-shower-lullaby-girl.mp3` mediante Vite. Se inicia directamente con el clic en «Abrir invitación», continúa durante toda la página, repite en loop y sube el volumen suavemente hasta 0.22.
 
-`src/assets/audio/baby-shower-music.mp3`
-
-La invitación no reproduce música al cargar. El audio comienza al pulsar «Abrir invitación» y continúa mientras se navega por la página. Si el archivo no está presente, la invitación sigue funcionando sin sonido. Si el navegador rechaza la reproducción, el control permanece disponible para volver a intentarlo.
+El elemento `<audio>` se mantiene montado desde `App`; la Splash no controla su ciclo de vida. No se reproduce sonido antes de la interacción.

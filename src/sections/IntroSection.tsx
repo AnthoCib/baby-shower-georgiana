@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ChevronDown, Flower2, Sparkles } from 'lucide-react'
+import { Flower2, Sparkles } from 'lucide-react'
 
 export function IntroSection() {
   const reduce = useReducedMotion()
@@ -12,6 +12,6 @@ export function IntroSection() {
       <motion.span className="intro-rule" variants={fade} transition={{ duration: 1 }} />
       <motion.p variants={fade} transition={{ duration: 1.1 }}>Y queremos compartir uno de ellos contigo.</motion.p>
     </motion.div>
-    <a className="scroll-cue" href="#hero"><span>Desliza para descubrir</span><ChevronDown size={17} strokeWidth={1.3} /></a>
+    <span className="scroll-cue" aria-hidden="true">Una historia para celebrar</span>
   </section>
 }

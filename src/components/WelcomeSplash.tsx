@@ -4,7 +4,7 @@ import { Flower2, Sparkles, Star } from 'lucide-react'
 import { event } from '../data/event'
 import bunny from '../assets/bunnies/bunny-hero.png'
 
-type WelcomeSplashProps = { onEnter: () => void; onDismiss: () => void }
+type WelcomeSplashProps = { onEnter: () => Promise<void>; onDismiss: () => void }
 
 export function WelcomeSplash({ onEnter, onDismiss }: WelcomeSplashProps) {
   const [opening, setOpening] = useState(false)
@@ -14,7 +14,7 @@ export function WelcomeSplash({ onEnter, onDismiss }: WelcomeSplashProps) {
 
   const enter = () => {
     if (opening || closing) return
-    onEnter()
+    void onEnter()
     setOpening(true)
     window.setTimeout(() => setClosing(true), reduceMotion ? 0 : 1050)
   }
@@ -74,7 +74,6 @@ export function WelcomeSplash({ onEnter, onDismiss }: WelcomeSplashProps) {
             whileTap={reduceMotion ? undefined : { scale: .97 }}
             animate={opening ? { opacity: 0, y: 6 } : { opacity: 1, y: 0 }}
             transition={{ duration: reduceMotion ? 0 : .22 }}
-            autoFocus
           >Abrir invitación</motion.button>
         </motion.div>
       </motion.section>}
