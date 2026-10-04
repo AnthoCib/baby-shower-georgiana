@@ -7,7 +7,7 @@ const dateParts = new Intl.DateTimeFormat('es-PE', {
 const part = (type: Intl.DateTimeFormatPartTypes) => dateParts.find(item => item.type === type)?.value ?? ''
 
 export const event = {
-  babyName: 'Giorgianna Valentina',
+  babyName: 'Georgiana Valentina',
   parents: 'Gloria & Anthony',
   eventName: 'Baby Shower',
   dateIso: eventDateIso,
